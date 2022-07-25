@@ -36,27 +36,40 @@ app.get("/write", (req, res) => {
 });
 
 app.post("/add", (req, res) => {
-  res.send("전송완료");
-
   db.collection("counter").findOne({ name: "postNum" }, (error, result) => {
     let postId = result.totalPost;
 
-    console.log(result.totalPost);
+    console.log(`현재 총 게시물은 ${result.totalPost}개`);
 
     db.collection("counter").updateOne(
       { name: "postNum" },
       { $inc: { totalPost: 1 } },
       (error, result) => {
-        console.log("수정완료");
+        console.log("postNum업데이트 완료.");
 
         db.collection("post").insertOne(
           { _id: postId, ...req.body },
           (error, result) => {
-            console.log("저장완료");
+            console.log("post에 데이터 저장 완료.");
+
+            db.collection("post")
+              .find()
+              .toArray((error, result) => {
+                console.log(result);
+                res.render("list.ejs", { posts: result });
+              });
           }
         );
       }
     );
+  });
+});
+
+app.delete("/delete", (req, res) => {
+  req.body._id = parseInt(req.body._id);
+
+  db.collection("post").deleteOne(req.body, (error, result) => {
+    console.log(`${req.body._id}번 id 삭제 완료`);
   });
 });
 
