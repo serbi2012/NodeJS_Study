@@ -27,10 +27,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/write", (req, res) => {
-  res.sendFile(__dirname + "/write.html");
-});
-
-app.get("/list", (req, res) => {
   db.collection("post")
     .find()
     .toArray((error, result) => {
@@ -41,8 +37,26 @@ app.get("/list", (req, res) => {
 
 app.post("/add", (req, res) => {
   res.send("전송완료");
-  db.collection("post").insertOne({ ...req.body }, (error, result) => {
-    console.log("저장완료");
+
+  db.collection("counter").findOne({ name: "postNum" }, (error, result) => {
+    let postId = result.totalPost;
+
+    console.log(result.totalPost);
+
+    db.collection("counter").updateOne(
+      { name: "postNum" },
+      { $inc: { totalPost: 1 } },
+      (error, result) => {
+        console.log("수정완료");
+
+        db.collection("post").insertOne(
+          { _id: postId, ...req.body },
+          (error, result) => {
+            console.log("저장완료");
+          }
+        );
+      }
+    );
   });
 });
 

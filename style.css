@@ -2,10 +2,29 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-color: #333;
-  color: #ccc;
 }
 
 .title {
   font-size: 5vmin;
+}
+
+.Home-Main-Container,
+.Write-Main-Container {
+  background-color: #333;
+  color: #ccc;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 3vmin;
+}
+
+.Form-Container,
+.Todolist-Contaienr {
+  width: 40vw;
+}
+
+.Todolist-Contaienr {
+  border: 1px solid #ccc;
+  border-radius: 2vmin;
 }
