@@ -10,44 +10,11 @@
       integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <title>Document</title>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">Home</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" href="/write">To Do</a>
-            </li>
-          </ul>
-          <form class="d-flex">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-success" type="submit">
-              Search
-            </button>
-          </form>
-        </div>
-      </div>
-    </nav>
+    <%- include('Navbar.html') %>
     <div class="Write-Main-Container">
       <div class="Form-Container">
         <h4 class="mt-4"><strong>To Do List</strong></h4>
@@ -75,7 +42,9 @@
             style="background-color: #333; color: #ccc; border: 1px solid #ccc"
           >
             <div class="ms-2 me-auto">
-              <div class="fw-bold"><%= posts[i].title %></div>
+              <div class="fw-bold postTitle" data-id="<%= posts[i]._id %>">
+                <%= posts[i].title %>
+              </div>
               <div><%= posts[i].date %></div>
             </div>
             <span
@@ -118,11 +87,23 @@
       $(".delete").click((e) => {
         $.ajax({
           method: "DELETE",
-          url: "/delete",
-          data: { _id: e.target.dataset.id },
+          url: `/delete/${e.target.dataset.id}`,
         })
           .done((result) => {
             console.log(result);
+          })
+          .fail((error) => {
+            console.log(error);
+          });
+      });
+
+      $(".postTitle").click((e) => {
+        $.ajax({
+          method: "GET",
+          url: `/detail/${e.target.dataset.id}`,
+        })
+          .done((result) => {
+            $(location).attr("href", `/detail/${e.target.dataset.id}`);
           })
           .fail((error) => {
             console.log(error);

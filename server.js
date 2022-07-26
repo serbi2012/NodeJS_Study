@@ -5,6 +5,7 @@ const MongoClient = require("mongodb").MongoClient;
 let db;
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 app.set("view engine", "ejs");
 
 MongoClient.connect(
@@ -22,8 +23,10 @@ MongoClient.connect(
   }
 );
 
+// GET
+//
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.render("index.ejs");
 });
 
 app.get("/write", (req, res) => {
@@ -35,6 +38,18 @@ app.get("/write", (req, res) => {
     });
 });
 
+app.get("/detail/:detailId", (req, res) => {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.detailId) },
+    (error, result) => {
+      console.log(result);
+      res.render("detail.ejs", { posts: result });
+    }
+  );
+});
+
+// POST
+//
 app.post("/add", (req, res) => {
   db.collection("counter").findOne({ name: "postNum" }, (error, result) => {
     let postId = result.totalPost;
@@ -65,14 +80,13 @@ app.post("/add", (req, res) => {
   });
 });
 
-app.delete("/delete", (req, res) => {
-  req.body._id = parseInt(req.body._id);
-
-  db.collection("post").deleteOne(req.body, (error, result) => {
-    console.log(`${req.body._id}번 id 삭제 완료`);
-  });
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/style.css");
+// DELETE
+//
+app.delete("/delete/:id", (req, res) => {
+  db.collection("post").deleteOne(
+    { _id: parseInt(req.params.id) },
+    (error, result) => {
+      console.log(`${req.params.id}번 id 삭제 완료`);
+    }
+  );
 });
