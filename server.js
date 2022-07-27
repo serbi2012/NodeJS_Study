@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const MongoClient = require("mongodb").MongoClient;
+const methodOverride = require("method-override");
 
 let db;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
+app.use(methodOverride("_method"));
 
 MongoClient.connect(
   "mongodb+srv://serbi2012:fb6fr2486R@cluster0.5dzsw.mongodb.net/nodeapp?retryWrites=true&w=majority",
@@ -48,6 +50,17 @@ app.get("/detail/:detailId", (req, res) => {
   );
 });
 
+app.get("/edit/:editId", (req, res) => {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.editId) },
+    (error, result) => {
+      console.log(result);
+
+      res.render("edit.ejs", { data: result });
+    }
+  );
+});
+
 // POST
 //
 app.post("/add", (req, res) => {
@@ -80,6 +93,20 @@ app.post("/add", (req, res) => {
   });
 });
 
+// PUT
+//
+app.put("/edit", function (req, res) {
+  db.collection("post").updateOne(
+    { _id: parseInt(req.body.id) },
+    { $set: { title: req.body.title, date: req.body.date } },
+    (error, result) => {
+      console.log(`${req.body.id}번 게시물 수정완료.`);
+
+      res.redirect("/write");
+    }
+  );
+});
+
 // DELETE
 //
 app.delete("/delete/:id", (req, res) => {
@@ -87,6 +114,12 @@ app.delete("/delete/:id", (req, res) => {
     { _id: parseInt(req.params.id) },
     (error, result) => {
       console.log(`${req.params.id}번 id 삭제 완료`);
+
+      db.collection("post")
+        .find()
+        .toArray((error, result) => {
+          res.render("list.ejs", { posts: result });
+        });
     }
   );
 });

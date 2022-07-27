@@ -48,11 +48,18 @@
               <div><%= posts[i].date %></div>
             </div>
             <span
-              class="badge bg-secondary rounded-pill delete"
+              class="badge bg-secondary rounded-pill edit me-2"
+              style="cursor: pointer"
+              data-id="<%= posts[i]._id %>"
+              >Edit</span
+            >
+            <span
+              class="badge bg-danger rounded-pill delete"
               style="cursor: pointer"
               data-id="<%= posts[i]._id %>"
               >Delete</span
-            ><span
+            >
+            <span
               style="
                 font-size: 1vmin;
                 position: absolute;
@@ -90,7 +97,20 @@
           url: `/delete/${e.target.dataset.id}`,
         })
           .done((result) => {
-            console.log(result);
+            $(location).attr("href", `/write`);
+          })
+          .fail((error) => {
+            console.log(error);
+          });
+      });
+
+      $(".edit").click((e) => {
+        $.ajax({
+          method: "GET",
+          url: `/edit/${e.target.dataset.id}`,
+        })
+          .done((result) => {
+            $(location).attr("href", `/edit/${e.target.dataset.id}`);
           })
           .fail((error) => {
             console.log(error);
